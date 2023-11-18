@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="472.0" prefWidth="768.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.project.GameController">
+   <children>
+      <ImageView fitHeight="487.0" fitWidth="794.0" layoutX="-1.0" layoutY="-4.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../UI/BACKGROUND/Winter_final.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="183.0" fitWidth="66.0" layoutX="122.0" layoutY="300.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/beta.png" />
+         </image>
+      </ImageView>
+      <Button contentDisplay="GRAPHIC_ONLY" layoutX="1.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="58.0" style="-fx-background-color: transparent;" text="Button" />
+      <ImageView fitHeight="183.0" fitWidth="56.0" layoutX="377.0" layoutY="300.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/delta.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="183.0" fitWidth="94.0" layoutX="628.0" layoutY="300.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/beta.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="26.0" fitWidth="27.0" layoutX="131.0" layoutY="274.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/hero.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="183.0" fitWidth="168.0" layoutX="238.0" layoutY="-29.0" opacity="0.89" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../../../../../../Downloads/score-fococlipping-standard.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="162.0" fitWidth="168.0" layoutX="364.0" layoutY="-27.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../UI_LOAD_SCREEN/score-fococlipping-standard.png" />
+         </image>
+      </ImageView>
+      <Text fill="WHITE" layoutX="298.0" layoutY="103.0" strokeType="OUTSIDE" strokeWidth="0.0" text="SCORE">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Text>
+      <Text fill="WHITE" layoutX="408.0" layoutY="102.0" strokeType="OUTSIDE" strokeWidth="0.0" text="FRUIT" wrappingWidth="91.20001220703125">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Text>
+      <ImageView fitHeight="23.0" fitWidth="28.0" layoutX="454.0" layoutY="39.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/fruit.png" />
+         </image>
+      </ImageView>
+      <Button contentDisplay="GRAPHIC_ONLY" layoutX="32.0" layoutY="32.0" mnemonicParsing="false" style="-fx-background-color: transparent;" text="Button" />
+      <ImageView fitHeight="103.0" fitWidth="75.0" layoutX="6.0" layoutY="3.0" opacity="0.86" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../../../../../../Downloads/Home_Button_Clipart_Hd_PNG__Game_Home_Icon_Button__Home_Icons__Game_Icons__Button_Icons_PNG_Image_For_Free_Download-removebg-preview.png" />
+         </image>
+      </ImageView>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#000b15" height="231.0" layoutX="157.0" layoutY="69.0" stroke="BLACK" strokeType="INSIDE" width="4.0" />
+      <Text fill="#f7f5f5" layoutX="315.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" wrappingWidth="14.020161628723145">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Text>
+      <Text fill="#f7f5f5" layoutX="424.0" layoutY="57.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" wrappingWidth="14.020161628723145">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Text>
+   </children>
+</AnchorPane>
