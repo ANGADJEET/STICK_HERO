@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -18,7 +19,7 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.Random;
 
 public class StartScreen {
@@ -33,17 +34,17 @@ public class StartScreen {
     private Rectangle stick;
     private Rotate stickRotate;
     private Pane gamePage;
-    private int score = 0;
-    private int cherryCount = 0;
+    private static int score = 0;
+    private static int cherryCount = 0;
     private boolean isExtending = false;
     private boolean isRotating = false;
-    private boolean isTaken = false;
+    boolean isTaken = false;
     private boolean isGenerated = false;
     private boolean isAtEnd = false;
     private boolean isAlive = true;
     private boolean isFlipped = false;
-    private double extensionSpeed = 3;
-    private double rotationSpeed = 1;
+    private double extensionSpeed = 5;
+    private double rotationSpeed = 10;
     private int heroX = 115;
     private HighScoreCalculator highScoreCalculator = new HighScoreCalculator();
     private int highScore = highScoreCalculator.calculateHighScore();
@@ -54,6 +55,38 @@ public class StartScreen {
 
     RandomCherryGenerator gen = RandomCherryGenerator.getInstance();
     private double cherryPos = gen.generateCherry();
+
+    static GameValues gameValues = new GameValues();
+
+    public void serialize() throws IOException {
+        ObjectOutputStream out = null;
+        try {
+            out = new ObjectOutputStream(new FileOutputStream("./src/StoredGame.txt"));
+            gameValues.setScore(score);
+            gameValues.setCherryCount(cherryCount);
+            out.writeObject(gameValues);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            out.close();
+        }
+    }
+
+    public static void deserialize() throws IOException, ClassNotFoundException {
+        ObjectInputStream in = null;
+        try {
+            in = new ObjectInputStream (new FileInputStream("./src/StoredGame.txt"));
+            gameValues = (GameValues) in.readObject();
+            score = gameValues.getScore();
+            System.out.println(score);
+            cherryCount = gameValues.getCherryCount();
+            System.out.println(cherryCount);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }finally {
+            in.close();
+        }
+    }
 
     public StartScreen() throws IOException {
     }
@@ -97,7 +130,12 @@ public class StartScreen {
         setupAnimationTimer();
     }
 
-
+    public void loadSavedGame(MouseEvent mouseEvent)throws IOException, ClassNotFoundException{
+        deserialize();
+        initializeGame();
+        setupMouseEvents();
+        setupAnimationTimer();
+    }
     private void initializeStick() {
         stick = new Rectangle(5, 0, Color.BLACK);
         stickRotate = new Rotate(0, 0, 260);
@@ -112,6 +150,16 @@ public class StartScreen {
 
     private void setupMouseEvents() {
         Pane gamePage = (Pane) stage.getScene().getRoot();
+        gamePage.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.S) {
+                try {
+                    System.out.println("clicked on save");
+                    serialize();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
         if (!isGenerated) {
             gamePage.setOnMousePressed(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
@@ -195,7 +243,7 @@ public class StartScreen {
     }
 
     private void movePlayerAndCheckCollision(Player player) throws IOException {
-        heroX += 1;
+        heroX += 3;
         double cherryXpos = cherryPos;
         renderCherry(gc, cherryXpos);
         if (isFlipped && !isTaken) {
@@ -223,12 +271,12 @@ public class StartScreen {
         }
     }
 
-    private void handleCherryTaken() {
+    void handleCherryTaken() {
         cherryCount++;
         isTaken = true;
         System.out.println("Cherry - " + cherryCount);
     }
-    private void handleGameOverDueToPlatform() throws IOException {
+    void handleGameOverDueToPlatform() throws IOException {
         System.out.println("Game Over, due to Platform");
         highScoreCalculator.addScore(score);
         System.out.println(score);
@@ -282,7 +330,7 @@ public class StartScreen {
         endStage.show();
     }
 
-    private void handleNextLevel() throws IOException {
+    void handleNextLevel() throws IOException {
         heroX = 115;
         isAtEnd = false;
         isGenerated = false;
@@ -305,7 +353,7 @@ public class StartScreen {
     }
 
 
-    private void handleGameOverDueToFlippedPlatform() throws IOException {
+    void handleGameOverDueToFlippedPlatform() throws IOException {
         System.out.println("Game Over due to flipped Platform");
         loadEndPage();
         highScoreCalculator.addScore(score);
@@ -313,7 +361,7 @@ public class StartScreen {
         timer.stop();
     }
 
-    private void handleGameOver() throws IOException {
+    void handleGameOver() throws IOException {
         System.out.println("Game Over");
         loadEndPage();
         highScoreCalculator.addScore(score);
@@ -321,13 +369,13 @@ public class StartScreen {
         timer.stop();
     }
 
-    private void updateScore() {
+    void updateScore() {
         String scoreString = Integer.toString(score);
         scoreText.setText(scoreString);
         CherryCount.setText(scoreString);
     }
 
-    private void handleStickAnimation() {
+    void handleStickAnimation() {
         if (isExtending) {
             extendStick();
         }
@@ -348,7 +396,7 @@ public class StartScreen {
 
     private void rotate() {
         double currentAngle = stickRotate.getAngle();
-        double newAngle = currentAngle + rotationSpeed;
+        double newAngle = currentAngle + (rotationSpeed);
         double maxAngle = 90;
         if (newAngle <= maxAngle) {
             stickRotate.setAngle(newAngle);
@@ -358,7 +406,7 @@ public class StartScreen {
         }
     }
 
-    private void renderStick() {
+    void renderStick() {
         gc.setFill(Color.BLACK);
         gc.save();
         gc.translate(148, 260);

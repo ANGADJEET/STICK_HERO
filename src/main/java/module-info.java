@@ -4,6 +4,8 @@ module com.example.project {
 
     requires org.kordamp.bootstrapfx.core;
     requires javafx.media;
+    requires java.desktop;
+    requires org.junit.jupiter.api;
     opens com.example.project to javafx.fxml;
     exports TesTingThings;
     exports com.example.project;

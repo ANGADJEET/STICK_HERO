@@ -1,13 +1,20 @@
 package com.example.project;
 
+import javafx.concurrent.Task;
+import javafx.scene.media.AudioClip;
+//import javax.sound.*;
+import javafx.scene.media.AudioClip;
+
 public class SoundManager {
-    public void playBackgroundMusic() {
-        // Play background music
+
+    private static final String SOUND_FILE = "/Stick_Hero_Audio.mp3";
+    private AudioClip audioClip;
+
+    public SoundManager() {
+        audioClip = new AudioClip(getClass().getResource(SOUND_FILE).toExternalForm());
     }
 
-    public void playCollisionSound() {
-        // Play a sound effect for collisions
+    public void playSoundInBackground() {
+        new Thread(() -> audioClip.play()).start();
     }
-
-    // Other sound-related methods
 }
