@@ -29,9 +29,6 @@ public class Player {
         this.isWalking = false;
     }
 
-    public void generate_stick() {
-        // Implementation for generating stick
-    }
 
     public boolean checkIsAlive(double xpos) {
         if (xpos > 540 || xpos < 460) {

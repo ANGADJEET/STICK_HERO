@@ -7,6 +7,5 @@ module com.example.project {
     requires java.desktop;
     requires org.junit.jupiter.api;
     opens com.example.project to javafx.fxml;
-    exports TesTingThings;
     exports com.example.project;
 }

@@ -20,8 +20,8 @@ class StartScreenTest {
     }
 
     @Test
-    void handleGameOverDueToPlatform() {
-        assertDoesNotThrow(() -> startScreen.handleGameOverDueToPlatform());
+    void handleGameOverDueToPillar() {
+        assertDoesNotThrow(() -> startScreen.handleGameOverDueToPillar());
     }
 
     @Test
@@ -30,8 +30,8 @@ class StartScreenTest {
     }
 
     @Test
-    void handleGameOverDueToFlippedPlatform() {
-        assertDoesNotThrow(() -> startScreen.handleGameOverDueToFlippedPlatform());
+    void handleGameOverDueToFlippedPillar() {
+        assertDoesNotThrow(() -> startScreen.handleGameOverDueToFlippedPillar());
     }
 
     @Test

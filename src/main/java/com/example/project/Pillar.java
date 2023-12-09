@@ -3,16 +3,14 @@ package com.example.project;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
-import java.util.ArrayList;
 
-
-public class Platform implements Rectangle, Collider {
+public class Pillar implements Rectangle {
     private double xPos;
     private double width;
     private double height;
     private Image platformImage;
     private String[] pillars = {"/beta.png","/gamma.png","/alpha.png","/beta.png"};
-    public Platform(Image platformImage, double x, double y) {
+    public Pillar(Image platformImage, double x, double y) {
         this.platformImage = platformImage;
         this.width = x;
         this.height = y;
@@ -30,11 +28,5 @@ public class Platform implements Rectangle, Collider {
     @Override
     public double getHeight() {
         return height;
-    }
-
-    @Override
-    public boolean checkCollision(Collider other) {
-        // Collision logic with another collider (e.g., hero or stick)
-        return false;
     }
 }

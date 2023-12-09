@@ -18,7 +18,4 @@ public class Stick implements Rectangle {
     public double getHeight() {
         return length; // Assuming the stick is vertical
     }
-
-    // Additional methods for stick behavior
-    // e.g., extend, retract
 }

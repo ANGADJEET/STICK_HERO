@@ -22,13 +22,14 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.util.Random;
 
-public class StartScreen {
+public class StartScreen implements ScoreObserver {
     @FXML
     private Text scoreText = new Text("0"); // Initialize with "0" or any default value
     @FXML
     private Text CherryCount = new Text();
     AnimationTimer timer;
     private Stage stage;
+    private ScoreSubject scoreSubject = new ScoreSubject();
     private GraphicsContext gc;
     private Canvas canvas;
     private Rectangle stick;
@@ -57,6 +58,10 @@ public class StartScreen {
     private double cherryPos = gen.generateCherry();
 
     static GameValues gameValues = new GameValues();
+    public StartScreen() throws IOException {
+        super();
+        scoreSubject.addObserver(this);
+    }
 
     public void serialize() throws IOException {
         ObjectOutputStream out = null;
@@ -88,13 +93,12 @@ public class StartScreen {
         }
     }
 
-    public StartScreen() throws IOException {
-    }
 
     @FXML
     public void start_new_game(MouseEvent mouseEvent) throws IOException {
         initializeGame();
         setupMouseEvents();
+        scoreSubject.setScore(0);
         setupAnimationTimer();
     }
 
@@ -119,13 +123,8 @@ public class StartScreen {
         initializeStick();
         initializeCanvas();
         gamePage.getChildren().addAll(canvas, stick);
-        // Set the CherryCount text
         stage.setScene(new Scene(gamePage));
         stage.show();
-
-        // Update class variables with new instances
-//        this.canvas = canvas;
-//        this.gc = gc;
         setupMouseEvents();
         setupAnimationTimer();
     }
@@ -207,24 +206,24 @@ public class StartScreen {
 
     private void updateGame() throws IOException {
         clearCanvas();
-        renderPlatform();
+        renderPillar();
         renderPlayer();
         handleStickAnimation();
         setupMouseEvents();
         // Render the score in each frame
         gc.setFont(Font.font("Arial", FontWeight.BOLD, 20));
         gc.setFill(Color.WHITE);
-        gc.fillText("Score: " + score, 40, 55);
-        gc.fillText("Cherry: " + cherryCount, 250, 55);
-        gc.fillText("High :" + highScore, 460, 55);
+        gc.fillText("Score: " + score, 75, 70);
+        gc.fillText("Cherry: " + cherryCount, 255, 70);
+        gc.fillText("High: " + highScore, 450, 70);
     }
 
     private void clearCanvas() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
-    private void renderPlatform() {
-        Platform platform = new Platform(new Image(getClass().getResourceAsStream("/beta.png")), 0, 0);
+    private void renderPillar() {
+        Pillar platform = new Pillar(new Image(getClass().getResourceAsStream("/beta.png")), 0, 0);
         platform.render(gc, index);
     }
 
@@ -249,7 +248,7 @@ public class StartScreen {
         if (isFlipped && !isTaken) {
             renderFlippedPlayerAndCheckCherry(player, cherryXpos);
         } else if (isFlipped) {
-            renderFlippedPlayerAndCheckPlatformCollision(player);
+            renderFlippedPlayerAndCheckPillarCollision(player);
         } else {
             player.renderHero(gc, heroX, isFlipped ? heroY + 20 : heroY, true, stick.getHeight());
         }
@@ -263,11 +262,11 @@ public class StartScreen {
         }
     }
 
-    private void renderFlippedPlayerAndCheckPlatformCollision(Player player) throws IOException {
+    private void renderFlippedPlayerAndCheckPillarCollision(Player player) throws IOException {
         player.renderHero(gc, heroX, heroY + 20, true, stick.getHeight());
 
         if (heroX <= 125 && heroX >= 400) {
-            handleGameOverDueToPlatform();
+            handleGameOverDueToPillar();
         }
     }
 
@@ -276,11 +275,12 @@ public class StartScreen {
         isTaken = true;
         System.out.println("Cherry - " + cherryCount);
     }
-    void handleGameOverDueToPlatform() throws IOException {
-        System.out.println("Game Over, due to Platform");
+    void handleGameOverDueToPillar() throws IOException {
+        System.out.println("Game Over, due to Pillar");
         highScoreCalculator.addScore(score);
         System.out.println(score);
-        timer.stop();
+        loadEndPage();
+        //timer.stop();
     }
     private void handleEndConditions(Player player) throws IOException {
         if (heroX != 115) {
@@ -291,7 +291,7 @@ public class StartScreen {
     }
     public void HandleRevive(MouseEvent mouseEvent) throws IOException {
         if (allowRevive()) {
-            cherryCount -= 1;
+            cherryCount -= 2;
             initializeGame();
             setupMouseEvents();
             setupAnimationTimer();
@@ -314,7 +314,7 @@ public class StartScreen {
         System.out.println(player.checkIsAlive(heroX));
         player.renderHero(gc, heroX, heroY, false, stick.getHeight());
         if (isFlipped) {
-            handleGameOverDueToFlippedPlatform();
+            handleGameOverDueToFlippedPillar();
         } else if (player.checkIsAlive(heroX) && !isFlipped) {
             handleNextLevel();
         } else {
@@ -349,12 +349,12 @@ public class StartScreen {
     }
 
     public boolean allowRevive() {
-        return cherryCount >= 2;
+        return cherryCount >= 0;
     }
 
 
-    void handleGameOverDueToFlippedPlatform() throws IOException {
-        System.out.println("Game Over due to flipped Platform");
+    void handleGameOverDueToFlippedPillar() throws IOException {
+        System.out.println("Game Over due to flipped Pillar");
         loadEndPage();
         highScoreCalculator.addScore(score);
         System.out.println(score);
@@ -384,6 +384,8 @@ public class StartScreen {
         }
         renderStick();
     }
+    
+    
 
     private void extendStick() {
         if (!isGenerated) {
@@ -413,5 +415,10 @@ public class StartScreen {
         gc.rotate(stickRotate.getAngle());
         gc.fillRect(-5, -stick.getHeight(), 5, stick.getHeight());
         gc.restore();
+    }
+
+    @Override
+    public void updateScore(int newScore) {
+
     }
 }

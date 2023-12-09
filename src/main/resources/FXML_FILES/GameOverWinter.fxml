@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -9,7 +8,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="472.0" prefWidth="768.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.project.GameController">
+<AnchorPane prefHeight="472.0" prefWidth="768.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.project.StartScreen">
    <children>
       <ImageView fitHeight="487.0" fitWidth="794.0" layoutX="-1.0" layoutY="-4.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -75,62 +74,16 @@
             <Image url="@../UI_LOAD_SCREEN/gave_over.png" />
          </image>
       </ImageView>
-      <Button contentDisplay="GRAPHIC_ONLY" layoutX="275.0" layoutY="125.0" mnemonicParsing="false" prefHeight="97.0" prefWidth="228.0" style="-fx-background-color: transparent;" text="Button">
-         <graphic>
-            <ImageView fitHeight="136.0" fitWidth="132.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../UI/BUTTONS/Play_cleanup-removebg-preview.png" />
-               </image>
-            </ImageView>
-         </graphic>
-      </Button>
-      <ImageView fitHeight="121.0" fitWidth="255.0" layoutX="296.0" layoutY="348.0" pickOnBounds="true" preserveRatio="true">
+      <Button contentDisplay="GRAPHIC_ONLY" layoutX="315.0" layoutY="186.0" mnemonicParsing="false" prefHeight="87.0" prefWidth="75.0" style="-fx-background-color: transparent;" text="Button" />
+      <ImageView id="Revive" fitHeight="150.0" fitWidth="159.0" layoutX="217.0" layoutY="183.0" onMouseClicked="#HandleRevive" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../images/scorescreen/scoreplate.png" />
+            <Image url="@../Revive/revive.png" />
          </image>
       </ImageView>
-      <Button contentDisplay="GRAPHIC_ONLY" layoutX="302.0" layoutY="242.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="176.0" style="-fx-background-color: transparent;" text="Button">
-         <graphic>
-            <ImageView fitHeight="125.0" fitWidth="193.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../UI/BUTTONS/Play_cleanup-removebg-preview.png" />
-               </image>
-            </ImageView>
-         </graphic>
-      </Button>
-      <Button contentDisplay="GRAPHIC_ONLY" layoutX="315.0" layoutY="186.0" mnemonicParsing="false" prefHeight="87.0" prefWidth="75.0" style="-fx-background-color: transparent;" text="Button">
-         <graphic>
-            <ImageView fitHeight="124.0" fitWidth="139.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../UI/BUTTONS/Play_cleanup-removebg-preview.png" />
-               </image>
-            </ImageView>
-         </graphic>
-      </Button>
-      <Label layoutX="355.0" layoutY="177.0" text="REPLAY" textFill="WHITE">
-         <font>
-            <Font size="20.0" />
-         </font>
-      </Label>
-      <Label layoutX="357.0" layoutY="239.0" text="REVIVE" textFill="WHITE">
-         <font>
-            <Font size="20.0" />
-         </font>
-      </Label>
-      <Label layoutX="358.0" layoutY="294.0" text="HOME" textFill="WHITE">
-         <font>
-            <Font size="20.0" />
-         </font>
-      </Label>
-      <Text layoutX="391.0" layoutY="391.0" strokeType="OUTSIDE" strokeWidth="0.0" text="8" wrappingWidth="23.999999999999943">
-         <font>
-            <Font size="20.0" />
-         </font>
-      </Text>
-      <Text fill="#0b0000" layoutX="387.0" layoutY="442.0" strokeType="OUTSIDE" strokeWidth="0.0" text="26">
-         <font>
-            <Font size="20.0" />
-         </font>
-      </Text>
+      <ImageView id="Exit" fitHeight="150.0" fitWidth="200.0" layoutX="400.0" layoutY="182.0" onMouseClicked="#HandleExit" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Revive/exit.png" />
+         </image>
+      </ImageView>
    </children>
 </AnchorPane>
