@@ -1,8 +1,7 @@
 package com.example.project;
 
-import javafx.animation.*;
+import javafx.animation.AnimationTimer;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Point3D;
 import javafx.scene.Scene;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -13,47 +12,65 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Rotate; // Import Rotate
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import java.io.IOException;
+import java.util.Random;
 
 public class StartScreen {
 
     private Stage stage;
-    private boolean is_at_end = false;
     private GraphicsContext gc;
     private Canvas canvas;
-    private Rectangle stick = new Rectangle(5, 0, Color.BLACK);
-    private Rotate stickRotate = new Rotate(0,0,260);
+    private Rectangle stick;
+    private Rotate stickRotate;
+    private double extensionSpeed = 5;
+    private double rotationSpeed = 2;
     private boolean isExtending = false;
     private boolean isRotating = false;
-    private double extensionSpeed = 2.0;
-    private double rotationSpeed = 2.0;
-    private boolean is_generated = false;
-    public boolean isAlive = true;
+    private boolean isGenerated = false;
+    private boolean isAtEnd = false;
+    private boolean isAlive = true;
     private int heroX = 115;
+
+    private int xposSeconD = 500;
+    private int yposSeconD = 260;
+    private boolean reacheSecPlatform = false;
 
     @FXML
     public void start_new_game(MouseEvent mouseEvent) throws IOException {
-        Pane gamePage = FXMLLoader.load(getClass().getResource("/FXML_FILES/GamePlayWinter.fxml"));
-        stick.setLayoutX(148);
-        stick.setLayoutY(260);
-        canvas = new Canvas(768, 483);
-        gc = canvas.getGraphicsContext2D();
-        //stick.getTransforms().add(stickRotate);
-        gamePage.getChildren().addAll(canvas, stick);
+        initializeGame();
+        setupMouseEvents();
+        setupAnimationTimer();
+    }
 
-        // Set the pivot at the center of the stick's base
-//        stickRotate.setPivotX(0);
-//        stickRotate.setPivotY(260);
+    private void initializeGame() throws IOException {
+        Pane gamePage = FXMLLoader.load(getClass().getResource("/FXML_FILES/GamePlayWinter.fxml"));
+        initializeStick();
+        initializeCanvas();
+        gamePage.getChildren().addAll(canvas, stick);
 
         stage = new Stage();
         stage.setTitle("Stick Hero Game");
         stage.setScene(new Scene(gamePage));
         stage.show();
+    }
 
+    private void initializeStick() {
+        stick = new Rectangle(5, 0, Color.BLACK);
+        stickRotate = new Rotate(0, 0, 260);
+    }
+
+    private void initializeCanvas() {
+        stick.setLayoutX(148);
+        stick.setLayoutY(260);
+        canvas = new Canvas(768, 483);
+        gc = canvas.getGraphicsContext2D();
+    }
+
+    private void setupMouseEvents() {
+        Pane gamePage = (Pane) stage.getScene().getRoot();
         gamePage.setOnMousePressed(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
                 isExtending = true;
@@ -61,61 +78,115 @@ public class StartScreen {
                 extendStick();
             }
         });
+
         gamePage.setOnMouseReleased(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
                 isExtending = false;
                 isRotating = true;
             }
         });
+    }
+
+    private void setupAnimationTimer() {
         new AnimationTimer() {
             @Override
             public void handle(long currentNanoTime) {
-                gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-                Platform platform = new Platform(new Image(getClass().getResourceAsStream("/beta.png")), 0, 0);
-                platform.render(gc);
-                Player player = new Player();
-                if(is_generated && heroX < stick.getHeight()+120){
-                    heroX += 1;
-                    player.renderHero(gc, heroX,true,stick.getHeight());
-                }
-                else{
-//                  is_generated = true;
-                    is_at_end = true;
-                    player.renderHero(gc, heroX,false,stick.getHeight());
-                }
-                if (isExtending) {
-                    extendStick();
-                }
-                if (isRotating) {
-                    rotate();
-                }
-                gc.setFill(Color.BLACK);
-                gc.save();
-                gc.translate(148, 260);
-                gc.rotate(stickRotate.getAngle());
-                gc.fillRect(-5, -stick.getHeight(), 5, stick.getHeight());
-                gc.restore();
+                updateGame();
             }
         }.start();
     }
-    private void extendStick() {
-        if(!is_generated) {
-            double currentHeight = stick.getHeight();
-            double newHeight = currentHeight + extensionSpeed;
-            double maxHeight = 200;
-            stick.setHeight(newHeight);
+
+    private void updateGame() {
+        clearCanvas();
+        if(reacheSecPlatform) {
+            renderAgain();
+            reacheSecPlatform = false;
+        }
+        else {
+            renderPlatform();
+            renderPlayer();
+            handleStickAnimation();
         }
     }
-        public void rotate(){
-            double currentAngle = stickRotate.getAngle();
-            double newAngle = currentAngle + rotationSpeed;
-            double maxAngle = 90;
-            if (newAngle <= maxAngle) {
-                stickRotate.setAngle(newAngle);
-                is_generated = true;
-            }
-            else {
-                isRotating = false;
-            }
+    private void renderFall(){
+        if(!isAlive){
+            System.out.println("render fall");
+            Player player = new Player();
+            player.renderHero(gc, heroX, false, stick.getHeight());
         }
+    }
+    private void renderAgain(){
+        System.out.println("render again");
+        String[] imageNames = {"alpha.png", "beta.png", "gamma.png"};
+
+        Random random = new Random();
+        int randomIndex = random.nextInt(imageNames.length);
+
+        // Get the randomly selected image name
+        String randomImageName = imageNames[randomIndex];
+        // Generate a random index to select a random image name
+
+        // Create the Platform object with the randomly selected image
+        Platform platform = new Platform(new Image(getClass().getResourceAsStream("/" + randomImageName)), 0, 0);
+        platform.render(gc);
+        Player player = new Player();
+        reacheSecPlatform = player.renderHero(gc, 115, true, 260);
+    }
+    private void clearCanvas() {
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+    }
+    private void renderPlatform() {
+        Platform platform = new Platform(new Image(getClass().getResourceAsStream("/beta.png")), 0, 0);
+        platform.render(gc);
+    }
+    private void renderPlayer() {
+        Player player = new Player();
+        if (isGenerated && heroX < stick.getHeight() + 120) {
+            heroX += 1;
+            player.renderHero(gc, heroX, true, stick.getHeight());
+        } else {
+            isAtEnd = true;
+            player.renderHero(gc, heroX, false, stick.getHeight());
+        }
+    }
+
+    private void handleStickAnimation() {
+        if (isExtending) {
+            extendStick();
+        }
+        if (isRotating) {
+            rotate();
+        }
+        renderStick();
+    }
+
+    private void extendStick() {
+        if (!isGenerated) {
+            double currentHeight = stick.getHeight();
+            double newHeight = currentHeight + extensionSpeed;
+            double maxHeight = 500;
+            stick.setHeight(Math.min(newHeight, maxHeight));
+        }
+    }
+
+    private void rotate() {
+        double currentAngle = stickRotate.getAngle();
+        double newAngle = currentAngle + rotationSpeed;
+        double maxAngle = 90;
+        if (newAngle <= maxAngle) {
+            stickRotate.setAngle(newAngle);
+            isGenerated = true;
+        } else {
+            isRotating = false;
+        }
+    }
+
+    private void renderStick() {
+        gc.setFill(Color.BLACK);
+        gc.save();
+        gc.translate(148, 260);
+        gc.rotate(stickRotate.getAngle());
+        gc.fillRect(-5, -stick.getHeight(), 5, stick.getHeight());
+        gc.restore();
+    }
 }

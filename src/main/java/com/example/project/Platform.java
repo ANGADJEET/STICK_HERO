@@ -3,6 +3,8 @@ package com.example.project;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
+import java.util.ArrayList;
+
 
 public class Platform implements Rectangle, Collider {
     private double xPos;
@@ -16,8 +18,8 @@ public class Platform implements Rectangle, Collider {
         this.height = y;
     }
     public void render(GraphicsContext gc) {
-        double x = 100; // Center horizontally
-        double y = 260; // Align with the bottom
+        double x = 100;
+        double y = 260;
         gc.drawImage(platformImage, x, y);
         gc.drawImage(new Image(getClass().getResourceAsStream("/gamma.png")), x + 400, y);
     }
@@ -25,7 +27,6 @@ public class Platform implements Rectangle, Collider {
     public double getWidth() {
         return width;
     }
-
     @Override
     public double getHeight() {
         return height;

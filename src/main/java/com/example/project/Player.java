@@ -5,8 +5,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.image.Image;
 
 public class Player {
-    private static Hero hero;
-
+    private Hero hero;  // Non-static instance of Hero
     private Rectangle stick;
     private int score;
     private int cherries;
@@ -17,8 +16,8 @@ public class Player {
     private boolean isWalking;
     private double yPos = 232;
     private double stickEndpoint;
-    private double xpos;
-    public Player(){
+
+    public Player() {
         this.hero = new Hero(115);
         this.stick = new Rectangle();
         this.score = 0;
@@ -28,29 +27,43 @@ public class Player {
         this.isExtending = false;
         this.isRetracting = false;
         this.isWalking = false;
+    }
 
+    public void generate_stick() {
+        // Implementation for generating stick
     }
-    public void generate_stick(){
-    }
-    public boolean checkIsAlive() {
-        if(xpos>stickEndpoint){
+
+    public boolean checkIsAlive(double xpos) {
+        if (xpos > stickEndpoint && xpos < 480) {
+            System.out.println("player is dead");
+            return false;
+        }
+        if (xpos < stickEndpoint && xpos > 480) {
             System.out.println("player is dead");
             return false;
         }
         return true;
     }
-    public void renderHero(GraphicsContext gc, double xPos, boolean isAlive, double stickEndpoint){
-        if(isAlive) {
-            isAlive = checkIsAlive();
-            System.out.println(stickEndpoint);
+
+    public boolean renderHero(GraphicsContext gc, double xPos, boolean isAlive, double stickEndpoint) {
+        if (isAlive) {
+            isAlive = checkIsAlive(xPos);
+            System.out.println(this.stickEndpoint);  // Use 'this' to refer to the class variable
             System.out.println(xPos);
-            stickEndpoint = stickEndpoint;
+            this.stickEndpoint = stickEndpoint;  // Use 'this' to refer to the class variable
             gc.drawImage(hero.getImage(), xPos, 232);
-        }
-        else{
+        } else {
             yPos += 1;
             System.out.println("xpos in" + xPos);
             gc.drawImage(hero.getImage(), xPos, yPos);
+            if (xPos > 480 && xPos < 520) {
+                System.out.println("reached second");
+                return true;  // Corrected return value
+            } else if (xPos > 520) {
+                System.out.println("reached end");
+                return false;
+            }
         }
+        return false;
     }
 }

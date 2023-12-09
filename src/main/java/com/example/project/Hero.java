@@ -39,6 +39,5 @@ public class Hero {
     public Image getImage() {
         return new Image(getClass().getResourceAsStream("/hero.png"));
     }
-
     // Other hero-related attributes and methods
 }
