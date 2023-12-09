@@ -34,36 +34,19 @@ public class Player {
     }
 
     public boolean checkIsAlive(double xpos) {
-        if (xpos > stickEndpoint && xpos < 480) {
-            System.out.println("player is dead");
+        if (xpos > 540 || xpos < 460) {
+            System.out.println("Player is dead");
             return false;
         }
-        if (xpos < stickEndpoint && xpos > 480) {
-            System.out.println("player is dead");
-            return false;
+        else{
+            System.out.println("Player is alive");
+            return true;
         }
-        return true;
     }
 
-    public boolean renderHero(GraphicsContext gc, double xPos, boolean isAlive, double stickEndpoint) {
-        if (isAlive) {
-            isAlive = checkIsAlive(xPos);
-            System.out.println(this.stickEndpoint);  // Use 'this' to refer to the class variable
-            System.out.println(xPos);
-            this.stickEndpoint = stickEndpoint;  // Use 'this' to refer to the class variable
-            gc.drawImage(hero.getImage(), xPos, 232);
-        } else {
-            yPos += 1;
-            System.out.println("xpos in" + xPos);
-            gc.drawImage(hero.getImage(), xPos, yPos);
-            if (xPos > 480 && xPos < 520) {
-                System.out.println("reached second");
-                return true;  // Corrected return value
-            } else if (xPos > 520) {
-                System.out.println("reached end");
-                return false;
-            }
-        }
+    public boolean renderHero(GraphicsContext gc, double xPos, double yPosn, boolean isAlive, double stickEndpoint) {
+        gc.drawImage(hero.getImage(), xPos, yPosn);
         return false;
     }
+
 }

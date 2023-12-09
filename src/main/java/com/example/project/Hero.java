@@ -31,7 +31,6 @@ public class Hero {
         this.xPos = initialXPos;
     }
 
-
     public void moveForward() {
         this.xPos += 1;
     }

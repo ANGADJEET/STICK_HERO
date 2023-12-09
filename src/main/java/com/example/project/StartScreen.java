@@ -12,31 +12,37 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.Random;
 
 public class StartScreen {
-
+    @FXML
+    private Text scoreText = new Text("0"); // Initialize with "0" or any default value
+    @FXML
+    private Text CherryCount = new Text();
+    AnimationTimer timer;
     private Stage stage;
     private GraphicsContext gc;
     private Canvas canvas;
     private Rectangle stick;
     private Rotate stickRotate;
-    private double extensionSpeed = 5;
-    private double rotationSpeed = 2;
+    private Pane gamePage;
+    private int score = 0;
     private boolean isExtending = false;
     private boolean isRotating = false;
     private boolean isGenerated = false;
     private boolean isAtEnd = false;
     private boolean isAlive = true;
+    private boolean isFlipped = false;
+    private double extensionSpeed = 3;
+    private double rotationSpeed = 1;
     private int heroX = 115;
-
-    private int xposSeconD = 500;
-    private int yposSeconD = 260;
-    private boolean reacheSecPlatform = false;
+    private int heroY = 232;
 
     @FXML
     public void start_new_game(MouseEvent mouseEvent) throws IOException {
@@ -46,15 +52,28 @@ public class StartScreen {
     }
 
     private void initializeGame() throws IOException {
-        Pane gamePage = FXMLLoader.load(getClass().getResource("/FXML_FILES/GamePlayWinter.fxml"));
+        gamePage = FXMLLoader.load(getClass().getResource("/FXML_FILES/GamePlayWinter.fxml"));
         initializeStick();
         initializeCanvas();
         gamePage.getChildren().addAll(canvas, stick);
-
         stage = new Stage();
         stage.setTitle("Stick Hero Game");
         stage.setScene(new Scene(gamePage));
         stage.show();
+    }
+
+    private void spawnGame(GraphicsContext gc) throws IOException {
+        timer.stop();
+        clearCanvas();
+        gamePage = FXMLLoader.load(getClass().getResource("/FXML_FILES/GamePlayWinter.fxml"));
+        initializeStick();
+        initializeCanvas();
+        gamePage.getChildren().addAll(canvas, stick);
+        // Set the CherryCount text
+        stage.setScene(new Scene(gamePage));
+        stage.show();
+        setupMouseEvents();
+        setupAnimationTimer();
     }
 
     private void initializeStick() {
@@ -71,82 +90,116 @@ public class StartScreen {
 
     private void setupMouseEvents() {
         Pane gamePage = (Pane) stage.getScene().getRoot();
-        gamePage.setOnMousePressed(event -> {
-            if (event.getButton() == MouseButton.PRIMARY) {
-                isExtending = true;
-                isRotating = false;
-                extendStick();
-            }
-        });
+        if(!isGenerated) {
+            gamePage.setOnMousePressed(event -> {
+                if (event.getButton() == MouseButton.PRIMARY) {
+                    isExtending = true;
+                    isRotating = false;
+                    extendStick();
+                }
+            });
 
-        gamePage.setOnMouseReleased(event -> {
-            if (event.getButton() == MouseButton.PRIMARY) {
-                isExtending = false;
-                isRotating = true;
-            }
-        });
-    }
+            gamePage.setOnMouseReleased(event -> {
+                if (event.getButton() == MouseButton.PRIMARY) {
+                    isExtending = false;
+                    isRotating = true;
+                }
+            });
+        }
+        else{
+            gamePage.setOnMousePressed(event -> {
+                if (event.getButton() == MouseButton.PRIMARY) {
+                    isFlipped = true;
+                    heroY = 245;
+                }
+            });
+
+            gamePage.setOnMouseReleased(event -> {
+                if (event.getButton() == MouseButton.PRIMARY) {
+                    isFlipped = false;
+                    heroY = 232;
+                }
+            });
+        }
+
+        }
 
     private void setupAnimationTimer() {
-        new AnimationTimer() {
+        timer = new AnimationTimer() {
             @Override
             public void handle(long currentNanoTime) {
-                updateGame();
+                try {
+                    updateGame();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }.start();
+        };
+        timer.start();
     }
 
-    private void updateGame() {
+    private void updateGame() throws IOException {
         clearCanvas();
-        if(reacheSecPlatform) {
-            renderAgain();
-            reacheSecPlatform = false;
-        }
-        else {
-            renderPlatform();
-            renderPlayer();
-            handleStickAnimation();
-        }
-    }
-    private void renderFall(){
-        if(!isAlive){
-            System.out.println("render fall");
-            Player player = new Player();
-            player.renderHero(gc, heroX, false, stick.getHeight());
-        }
-    }
-    private void renderAgain(){
-        System.out.println("render again");
-        String[] imageNames = {"alpha.png", "beta.png", "gamma.png"};
+        renderPlatform();
+        renderPlayer();
+        handleStickAnimation();
+        // Render the score in each frame
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+        gc.setFill(Color.WHITE);
+        gc.fillText("Score: " + score, 50, 50);
 
-        Random random = new Random();
-        int randomIndex = random.nextInt(imageNames.length);
-
-        // Get the randomly selected image name
-        String randomImageName = imageNames[randomIndex];
-        // Generate a random index to select a random image name
-
-        // Create the Platform object with the randomly selected image
-        Platform platform = new Platform(new Image(getClass().getResourceAsStream("/" + randomImageName)), 0, 0);
-        platform.render(gc);
-        Player player = new Player();
-        reacheSecPlatform = player.renderHero(gc, 115, true, 260);
+        gc.strokeText("Cherry" + score, 292, 56);
     }
+
     private void clearCanvas() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
+
     private void renderPlatform() {
         Platform platform = new Platform(new Image(getClass().getResourceAsStream("/beta.png")), 0, 0);
         platform.render(gc);
     }
-    private void renderPlayer() {
+
+    public void renderCherry(GraphicsContext gc, double xPos) {
+        gc.drawImage(new Image(getClass().getResourceAsStream("/fruit.png")), xPos, 270);
+    }
+    private void renderPlayer() throws IOException {
         Player player = new Player();
         if (isGenerated && heroX < stick.getHeight() + 120) {
             heroX += 1;
-            player.renderHero(gc, heroX, true, stick.getHeight());
+            double cherryXpos = 115 + 250;
+            renderCherry(gc, cherryXpos);
+            player.renderHero(gc, heroX, heroY,true, stick.getHeight());
         } else {
-            isAtEnd = true;
-            player.renderHero(gc, heroX, false, stick.getHeight());
+            if(heroX!=115) {
+                isAtEnd = true;
+                System.out.println(player.checkIsAlive(heroX));
+                player.renderHero(gc, heroX, heroY, false, stick.getHeight());
+                if(player.checkIsAlive(heroX)){
+                    heroX = 115;
+                    isAtEnd = false;
+                    isGenerated = false;
+                    isRotating = false;
+                    isExtending = false;
+                    isAlive = true;
+                    score++;
+                    System.out.println(score);
+                    String scoreString = Integer.toString(score);
+                    scoreText.setText(scoreString);
+                    CherryCount.setText(scoreString);
+                    spawnGame(gc);
+                    return;
+                }
+                else{
+                    System.out.println("Game Over");
+                    System.out.println(score);
+                    timer.stop();
+                    return;
+                }
+            }
+            if(heroX==115){
+                player.renderHero(gc, heroX, heroY, true, stick.getHeight());
+            }
         }
     }
 
