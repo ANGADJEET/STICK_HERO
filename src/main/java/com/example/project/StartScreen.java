@@ -45,8 +45,8 @@ public class StartScreen {
     private double rotationSpeed = 1;
     private int heroX = 115;
     private int heroY = 232;
-
-
+    RandomCherryGenerator gen = RandomCherryGenerator.getInstance();
+    private double cherryPos = gen.generateCherry();
     @FXML
     public void start_new_game(MouseEvent mouseEvent) throws IOException {
         initializeGame();
@@ -179,10 +179,8 @@ public class StartScreen {
 
     private void movePlayerAndCheckCollision(Player player) {
         heroX += 1;
-
-        double cherryXpos = ;
+        double cherryXpos = cherryPos;
         renderCherry(gc, cherryXpos);
-
         if (isFlipped && !isTaken) {
             renderFlippedPlayerAndCheckCherry(player, cherryXpos);
         } else if (isFlipped) {
@@ -232,12 +230,12 @@ public class StartScreen {
         isAtEnd = true;
         System.out.println(player.checkIsAlive(heroX));
         player.renderHero(gc, heroX, heroY, false, stick.getHeight());
-
-        if (player.checkIsAlive(heroX) && !isFlipped) {
-            handleNextLevel();
-        } else if (isFlipped) {
+        if (isFlipped) {
             handleGameOverDueToFlippedPlatform();
-        } else {
+        }
+        else if (player.checkIsAlive(heroX) && !isFlipped) {
+            handleNextLevel();
+        }else {
             handleGameOver();
         }
     }
