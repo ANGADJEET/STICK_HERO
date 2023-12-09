@@ -19,6 +19,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Random;
 
 public class StartScreen {
     @FXML
@@ -44,9 +45,19 @@ public class StartScreen {
     private double extensionSpeed = 3;
     private double rotationSpeed = 1;
     private int heroX = 115;
+    private HighScoreCalculator highScoreCalculator = new HighScoreCalculator();
+    private int highScore = highScoreCalculator.calculateHighScore();
+    private int index = 0;
     private int heroY = 232;
+
+    private Pane endPage;
+
     RandomCherryGenerator gen = RandomCherryGenerator.getInstance();
     private double cherryPos = gen.generateCherry();
+
+    public StartScreen() throws IOException {
+    }
+
     @FXML
     public void start_new_game(MouseEvent mouseEvent) throws IOException {
         initializeGame();
@@ -66,7 +77,10 @@ public class StartScreen {
     }
 
     private void spawnGame(GraphicsContext gc) throws IOException {
-        timer.stop();
+        if (timer != null) {
+            timer.stop();
+        }
+
         clearCanvas();
         gamePage = FXMLLoader.load(getClass().getResource("/FXML_FILES/GamePlayWinter.fxml"));
         initializeStick();
@@ -75,9 +89,14 @@ public class StartScreen {
         // Set the CherryCount text
         stage.setScene(new Scene(gamePage));
         stage.show();
+
+        // Update class variables with new instances
+//        this.canvas = canvas;
+//        this.gc = gc;
         setupMouseEvents();
         setupAnimationTimer();
     }
+
 
     private void initializeStick() {
         stick = new Rectangle(5, 0, Color.BLACK);
@@ -93,7 +112,7 @@ public class StartScreen {
 
     private void setupMouseEvents() {
         Pane gamePage = (Pane) stage.getScene().getRoot();
-        if(!isGenerated) {
+        if (!isGenerated) {
             gamePage.setOnMousePressed(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
                     isExtending = true;
@@ -108,15 +127,13 @@ public class StartScreen {
                     isRotating = true;
                 }
             });
-        }
-        else{
+        } else {
             gamePage.setOnMousePressed(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
                     isFlipped = true;
                     System.out.println("Flipped");
                 }
             });
-
             gamePage.setOnMouseReleased(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
                     isFlipped = false;
@@ -124,8 +141,7 @@ public class StartScreen {
                 }
             });
         }
-
-        }
+    }
 
     private void setupAnimationTimer() {
         timer = new AnimationTimer() {
@@ -150,9 +166,9 @@ public class StartScreen {
         // Render the score in each frame
         gc.setFont(Font.font("Arial", FontWeight.BOLD, 20));
         gc.setFill(Color.WHITE);
-        gc.fillText("Score: " + score, 50, 50);
-
-        gc.strokeText("Cherry" + score, 292, 56);
+        gc.fillText("Score: " + score, 40, 55);
+        gc.fillText("Cherry: " + cherryCount, 250, 55);
+        gc.fillText("High :" + highScore, 460, 55);
     }
 
     private void clearCanvas() {
@@ -161,12 +177,13 @@ public class StartScreen {
 
     private void renderPlatform() {
         Platform platform = new Platform(new Image(getClass().getResourceAsStream("/beta.png")), 0, 0);
-        platform.render(gc);
+        platform.render(gc, index);
     }
 
     public void renderCherry(GraphicsContext gc, double xPos) {
         gc.drawImage(new Image(getClass().getResourceAsStream("/fruit.png")), xPos, 270);
     }
+
     private void renderPlayer() throws IOException {
         Player player = new Player();
 
@@ -177,7 +194,7 @@ public class StartScreen {
         }
     }
 
-    private void movePlayerAndCheckCollision(Player player) {
+    private void movePlayerAndCheckCollision(Player player) throws IOException {
         heroX += 1;
         double cherryXpos = cherryPos;
         renderCherry(gc, cherryXpos);
@@ -198,7 +215,7 @@ public class StartScreen {
         }
     }
 
-    private void renderFlippedPlayerAndCheckPlatformCollision(Player player) {
+    private void renderFlippedPlayerAndCheckPlatformCollision(Player player) throws IOException {
         player.renderHero(gc, heroX, heroY + 20, true, stick.getHeight());
 
         if (heroX <= 125 && heroX >= 400) {
@@ -211,19 +228,37 @@ public class StartScreen {
         isTaken = true;
         System.out.println("Cherry - " + cherryCount);
     }
-
-    private void handleGameOverDueToPlatform() {
+    private void handleGameOverDueToPlatform() throws IOException {
         System.out.println("Game Over, due to Platform");
+        highScoreCalculator.addScore(score);
         System.out.println(score);
         timer.stop();
     }
-
     private void handleEndConditions(Player player) throws IOException {
         if (heroX != 115) {
             handleEndGame(player);
         } else {
             player.renderHero(gc, heroX, heroY, true, stick.getHeight());
         }
+    }
+    public void HandleRevive(MouseEvent mouseEvent) throws IOException {
+        if (allowRevive()) {
+            cherryCount -= 1;
+            initializeGame();
+            setupMouseEvents();
+            setupAnimationTimer();
+        }
+        else{
+            System.out.println("Not enough Cherry");
+            System.exit(0);
+            System.out.println("Exit");
+        }
+    }
+
+    public void HandleExit(MouseEvent mouseEvent) throws IOException {
+        //do a system exit
+        System.exit(0);
+        System.out.println("Exit");
     }
 
     private void handleEndGame(Player player) throws IOException {
@@ -232,12 +267,19 @@ public class StartScreen {
         player.renderHero(gc, heroX, heroY, false, stick.getHeight());
         if (isFlipped) {
             handleGameOverDueToFlippedPlatform();
-        }
-        else if (player.checkIsAlive(heroX) && !isFlipped) {
+        } else if (player.checkIsAlive(heroX) && !isFlipped) {
             handleNextLevel();
-        }else {
+        } else {
             handleGameOver();
         }
+    }
+
+    public void loadEndPage() throws IOException {
+        endPage = FXMLLoader.load(getClass().getResource("/FXML_FILES/GameOverWinter.fxml"));
+        Stage endStage = new Stage();
+        endStage.setTitle("Game Over");
+        endStage.setScene(new Scene(endPage));
+        endStage.show();
     }
 
     private void handleNextLevel() throws IOException {
@@ -251,18 +293,30 @@ public class StartScreen {
         isAlive = true;
         score++;
         System.out.println(score);
+        Random random = new Random();
+        index = random.nextInt(4);
+        System.out.println("Random number between 0 and 3: " + index);
         updateScore();
         spawnGame(gc);
     }
 
-    private void handleGameOverDueToFlippedPlatform() {
+    public boolean allowRevive() {
+        return cherryCount >= 2;
+    }
+
+
+    private void handleGameOverDueToFlippedPlatform() throws IOException {
         System.out.println("Game Over due to flipped Platform");
+        loadEndPage();
+        highScoreCalculator.addScore(score);
         System.out.println(score);
         timer.stop();
     }
 
-    private void handleGameOver() {
+    private void handleGameOver() throws IOException {
         System.out.println("Game Over");
+        loadEndPage();
+        highScoreCalculator.addScore(score);
         System.out.println(score);
         timer.stop();
     }
@@ -272,7 +326,6 @@ public class StartScreen {
         scoreText.setText(scoreString);
         CherryCount.setText(scoreString);
     }
-
 
     private void handleStickAnimation() {
         if (isExtending) {

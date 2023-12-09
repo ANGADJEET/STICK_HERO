@@ -11,17 +11,17 @@ public class Platform implements Rectangle, Collider {
     private double width;
     private double height;
     private Image platformImage;
-
+    private String[] pillars = {"/beta.png","/gamma.png","/alpha.png","/beta.png"};
     public Platform(Image platformImage, double x, double y) {
         this.platformImage = platformImage;
         this.width = x;
         this.height = y;
     }
-    public void render(GraphicsContext gc) {
+    public void render(GraphicsContext gc, int index) {
         double x = 100;
         double y = 260;
         gc.drawImage(platformImage, x, y);
-        gc.drawImage(new Image(getClass().getResourceAsStream("/gamma.png")), x + 400, y);
+        gc.drawImage(new Image(getClass().getResourceAsStream(pillars[index])), x + 400, y);
     }
     @Override
     public double getWidth() {

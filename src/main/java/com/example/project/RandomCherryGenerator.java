@@ -10,7 +10,7 @@ public class RandomCherryGenerator {
         }
         return gen;
     }
-        public double generateCherry() {
+    public double generateCherry() {
             Random random = new Random();
             double randomValue = 300 + (50 * random.nextDouble());
             return randomValue;
