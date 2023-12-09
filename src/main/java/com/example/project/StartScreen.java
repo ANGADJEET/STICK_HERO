@@ -33,8 +33,10 @@ public class StartScreen {
     private Rotate stickRotate;
     private Pane gamePage;
     private int score = 0;
+    private int cherryCount = 0;
     private boolean isExtending = false;
     private boolean isRotating = false;
+    private boolean isTaken = false;
     private boolean isGenerated = false;
     private boolean isAtEnd = false;
     private boolean isAlive = true;
@@ -110,14 +112,14 @@ public class StartScreen {
             gamePage.setOnMousePressed(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
                     isFlipped = true;
-                    heroY = 245;
+                    System.out.println("Flipped");
                 }
             });
 
             gamePage.setOnMouseReleased(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
                     isFlipped = false;
-                    heroY = 232;
+                    System.out.println("Not Flipped");
                 }
             });
         }
@@ -143,6 +145,7 @@ public class StartScreen {
         renderPlatform();
         renderPlayer();
         handleStickAnimation();
+        setupMouseEvents();
         // Render the score in each frame
         gc.setFont(Font.font("Arial", FontWeight.BOLD, 20));
         gc.setFill(Color.WHITE);
@@ -165,43 +168,111 @@ public class StartScreen {
     }
     private void renderPlayer() throws IOException {
         Player player = new Player();
+
         if (isGenerated && heroX < stick.getHeight() + 120) {
-            heroX += 1;
-            double cherryXpos = 115 + 250;
-            renderCherry(gc, cherryXpos);
-            player.renderHero(gc, heroX, heroY,true, stick.getHeight());
+            movePlayerAndCheckCollision(player);
         } else {
-            if(heroX!=115) {
-                isAtEnd = true;
-                System.out.println(player.checkIsAlive(heroX));
-                player.renderHero(gc, heroX, heroY, false, stick.getHeight());
-                if(player.checkIsAlive(heroX)){
-                    heroX = 115;
-                    isAtEnd = false;
-                    isGenerated = false;
-                    isRotating = false;
-                    isExtending = false;
-                    isAlive = true;
-                    score++;
-                    System.out.println(score);
-                    String scoreString = Integer.toString(score);
-                    scoreText.setText(scoreString);
-                    CherryCount.setText(scoreString);
-                    spawnGame(gc);
-                    return;
-                }
-                else{
-                    System.out.println("Game Over");
-                    System.out.println(score);
-                    timer.stop();
-                    return;
-                }
-            }
-            if(heroX==115){
-                player.renderHero(gc, heroX, heroY, true, stick.getHeight());
-            }
+            handleEndConditions(player);
         }
     }
+
+    private void movePlayerAndCheckCollision(Player player) {
+        heroX += 1;
+        double cherryXpos = 115 + 250;
+        renderCherry(gc, cherryXpos);
+
+        if (isFlipped && !isTaken) {
+            renderFlippedPlayerAndCheckCherry(player, cherryXpos);
+        } else if (isFlipped) {
+            renderFlippedPlayerAndCheckPlatformCollision(player);
+        } else {
+            player.renderHero(gc, heroX, isFlipped ? heroY + 20 : heroY, true, stick.getHeight());
+        }
+    }
+
+    private void renderFlippedPlayerAndCheckCherry(Player player, double cherryXpos) {
+        player.renderHero(gc, heroX, heroY + 20, true, stick.getHeight());
+
+        if (heroX > cherryXpos - 20 && heroX < cherryXpos + 20) {
+            handleCherryTaken();
+        }
+    }
+
+    private void renderFlippedPlayerAndCheckPlatformCollision(Player player) {
+        player.renderHero(gc, heroX, heroY + 20, true, stick.getHeight());
+
+        if (heroX <= 125 && heroX >= 400) {
+            handleGameOverDueToPlatform();
+        }
+    }
+
+    private void handleCherryTaken() {
+        cherryCount++;
+        isTaken = true;
+        System.out.println("Cherry - " + cherryCount);
+    }
+
+    private void handleGameOverDueToPlatform() {
+        System.out.println("Game Over, due to Platform");
+        System.out.println(score);
+        timer.stop();
+    }
+
+    private void handleEndConditions(Player player) throws IOException {
+        if (heroX != 115) {
+            handleEndGame(player);
+        } else {
+            player.renderHero(gc, heroX, heroY, true, stick.getHeight());
+        }
+    }
+
+    private void handleEndGame(Player player) throws IOException {
+        isAtEnd = true;
+        System.out.println(player.checkIsAlive(heroX));
+        player.renderHero(gc, heroX, heroY, false, stick.getHeight());
+
+        if (player.checkIsAlive(heroX) && !isFlipped) {
+            handleNextLevel();
+        } else if (isFlipped) {
+            handleGameOverDueToFlippedPlatform();
+        } else {
+            handleGameOver();
+        }
+    }
+
+    private void handleNextLevel() throws IOException {
+        heroX = 115;
+        isAtEnd = false;
+        isGenerated = false;
+        isRotating = false;
+        isExtending = false;
+        isTaken = false;
+        isFlipped = false;
+        isAlive = true;
+        score++;
+        System.out.println(score);
+        updateScore();
+        spawnGame(gc);
+    }
+
+    private void handleGameOverDueToFlippedPlatform() {
+        System.out.println("Game Over due to flipped Platform");
+        System.out.println(score);
+        timer.stop();
+    }
+
+    private void handleGameOver() {
+        System.out.println("Game Over");
+        System.out.println(score);
+        timer.stop();
+    }
+
+    private void updateScore() {
+        String scoreString = Integer.toString(score);
+        scoreText.setText(scoreString);
+        CherryCount.setText(scoreString);
+    }
+
 
     private void handleStickAnimation() {
         if (isExtending) {
