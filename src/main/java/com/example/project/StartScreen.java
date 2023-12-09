@@ -46,6 +46,7 @@ public class StartScreen {
     private int heroX = 115;
     private int heroY = 232;
 
+
     @FXML
     public void start_new_game(MouseEvent mouseEvent) throws IOException {
         initializeGame();
@@ -178,7 +179,8 @@ public class StartScreen {
 
     private void movePlayerAndCheckCollision(Player player) {
         heroX += 1;
-        double cherryXpos = 115 + 250;
+
+        double cherryXpos = ;
         renderCherry(gc, cherryXpos);
 
         if (isFlipped && !isTaken) {
