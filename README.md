@@ -5,6 +5,7 @@ Welcome to the Stick Hero Game project! This JavaFX-based game incorporates esse
 ## Table of Contents
 - [Overview](#overview)
 - [Features](#features)
+- [Screenshots](#screenshots)
 - [How to Run](#how-to-run)
 - [Testing](#testing)
 - [Design Patterns](#design-patterns)
@@ -22,6 +23,18 @@ The Stick Hero Game is a JavaFX implementation that mimics the popular Stick Her
 - Scoring system with a focus on high scores
 - Save and load game progress
 - User-friendly interface with graphics and animations
+
+## Screenshots
+Here are some screenshots of the game in action:
+
+![Main Menu](screenshot.png)
+*Main Menu*
+
+![Gameplay](gameplay_screenshot.png)
+*Gameplay*
+
+![Game Over](game_over_screenshot.png)
+*Game Over*
 
 ## How to Run
 To run the Stick Hero Game, execute the `StickHeroApp` class. This will launch the game interface, allowing you to start a new game or load a saved one.
@@ -53,4 +66,5 @@ The Stick Hero Game incorporates the following design patterns:
 ## Contributors
 - Angadjeet Singh
 - Aryan Jain
-Feel free to expand and enhance the Stick Hero Game according to your creative vision. Happy coding!
+
+Feel free to expand and enhance the Stick Hero Ga
