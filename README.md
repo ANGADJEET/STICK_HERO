@@ -28,13 +28,13 @@ The Stick Hero Game is a JavaFX implementation that mimics the popular Stick Her
 Here are some screenshots of the game in action:
 
 ![Main Menu](Screenshot%202024-07-15%20022835.png)
-*Main Menu*
+
 
 ![Gameplay](Screenshot%202024-07-15%20022901.png)
-*Gameplay*
+
 
 ![Game Over](Screenshot%202024-07-15%20022939.png)
-*Game Over*
+
 
 ## How to Run
 To run the Stick Hero Game, execute the `StickHeroApp` class. This will launch the game interface, allowing you to start a new game or load a saved one.
