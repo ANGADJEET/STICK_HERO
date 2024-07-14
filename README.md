@@ -33,7 +33,7 @@ Here are some screenshots of the game in action:
 ![Gameplay](gameplay_screenshot.png)
 *Gameplay*
 
-![Game Over](game_over_screenshot.png)
+![Game Over](Screenshot 2024-07-15 022939.png)
 *Game Over*
 
 ## How to Run
