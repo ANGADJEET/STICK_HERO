@@ -27,13 +27,13 @@ The Stick Hero Game is a JavaFX implementation that mimics the popular Stick Her
 ## Screenshots
 Here are some screenshots of the game in action:
 
-![Main Menu]([screenshot.png](https://github.com/ANGADJEET/STICK_HERO/blob/master/Screenshot%202024-07-15%20022835.png)
+![Main Menu](Screenshot%202024-07-15%20022835.png)
 *Main Menu*
 
-![Gameplay](gameplay_screenshot.png)
+![Gameplay](Screenshot%202024-07-15%20022901.png)
 *Gameplay*
 
-![Game Over](Screenshot 2024-07-15 022939.png)
+![Game Over](Screenshot%202024-07-15%20022939.png)
 *Game Over*
 
 ## How to Run
@@ -67,4 +67,4 @@ The Stick Hero Game incorporates the following design patterns:
 - Angadjeet Singh
 - Aryan Jain
 
-Feel free to expand and enhance the Stick Hero Ga
+Feel free to expand and enhance the Stick Hero Game according to your creative vision. Happy coding!
