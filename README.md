@@ -27,7 +27,7 @@ The Stick Hero Game is a JavaFX implementation that mimics the popular Stick Her
 ## Screenshots
 Here are some screenshots of the game in action:
 
-![Main Menu](screenshot.png)
+![Main Menu]([screenshot.png](https://github.com/ANGADJEET/STICK_HERO/blob/master/Screenshot%202024-07-15%20022835.png)
 *Main Menu*
 
 ![Gameplay](gameplay_screenshot.png)
